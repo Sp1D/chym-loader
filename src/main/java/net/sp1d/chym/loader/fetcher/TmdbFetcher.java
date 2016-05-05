@@ -13,11 +13,16 @@ import com.omertron.themoviedbapi.model.tv.TVInfo;
 import com.omertron.themoviedbapi.results.ResultList;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.sp1d.chym.loader.bean.Genre;
 import net.sp1d.chym.loader.bean.ImdbRating;
 import net.sp1d.chym.loader.bean.Series;
 import net.sp1d.chym.loader.prototype.Fetcher;
+import net.sp1d.chym.loader.repo.GenreRepo;
 import net.sp1d.chym.loader.type.IdType;
 import net.sp1d.chym.loader.type.LangType;
 import org.apache.http.MethodNotSupportedException;
@@ -34,12 +39,16 @@ import org.springframework.stereotype.Component;
 public class TmdbFetcher implements Fetcher {
 
     private static final Logger LOG = LogManager.getLogger(TmdbFetcher.class);
+    private Map<Integer, Genre> genreCache = new HashMap<>();
 
     @Autowired
     TheMovieDbApi tmdb;
 
     @Autowired
     ImdbFetcher imdbFetcher;
+    
+    @Autowired
+    GenreRepo genreRepo;
 
     @Override
     public void fetchSeries(List<Series> series) throws MovieDbException, IOException, MethodNotSupportedException {
@@ -52,6 +61,7 @@ public class TmdbFetcher implements Fetcher {
             if (ser.readExtId(IdType.TMDB) == null) {
                 ResultList<TVBasic> tvblist = null;
                 
+//                Пытаемся достучаться до TMDB определенное количество раз
                 int repeats = 3;
                 for (int j = 0; j < repeats; j++) {
                     try {
@@ -79,6 +89,7 @@ public class TmdbFetcher implements Fetcher {
             } else {
                 tmdbId = Integer.valueOf(ser.readExtId(IdType.TMDB));
             }
+//            Получаем данные на англ языке
             TVInfo info = tmdb.getTVInfo(tmdbId, LangType.EN.toString().toLowerCase());
 
             ser.setTitle(info.getName());
@@ -91,6 +102,7 @@ public class TmdbFetcher implements Fetcher {
             ser.setLanguage(info.getOriginalLanguage());
             List<com.omertron.themoviedbapi.model.Genre> enGenres = info.getGenres();
 
+//            Получаем данные на русском языке
             info = tmdb.getTVInfo(tmdbId, LangType.RU.toString().toLowerCase());
 
             ser.putForeignTitle(LangType.RU, info.getName());
@@ -115,6 +127,18 @@ public class TmdbFetcher implements Fetcher {
             List<com.omertron.themoviedbapi.model.Genre> foreignGenres, LangType lang) {
         List<Genre> output = new ArrayList<>();
         for (com.omertron.themoviedbapi.model.Genre enGenre : enGenres) {
+            Genre genre = genreRepo.findOne(enGenre.getId());
+            if (genre != null) {
+                output.add(genre);
+                continue;
+            } else {
+                genre = genreCache.get(enGenre.getId());
+                if (genre != null) {
+                    output.add(genre);
+                    continue;
+                }
+            }
+            
             Genre newGenre = new Genre();
             newGenre.setId(enGenre.getId());
             newGenre.setName(enGenre.getName());
@@ -125,12 +149,13 @@ public class TmdbFetcher implements Fetcher {
                     break;
                 }
             }
-            newGenre.putForeignName(lang, foreignName);
+            if (foreignName != null) newGenre.putForeignName(lang, foreignName);
             output.add(newGenre);
+            genreCache.put(newGenre.getId(), newGenre);
         }
         return output;
     }
-
+/*
     private List<Genre> convertGenres(List<com.omertron.themoviedbapi.model.Genre> tmdbGenres) {
         List<Genre> ourGenres = new ArrayList<>();
         for (com.omertron.themoviedbapi.model.Genre tmdbGenre : tmdbGenres) {
@@ -141,4 +166,5 @@ public class TmdbFetcher implements Fetcher {
         }
         return ourGenres;
     }
+*/
 }
