@@ -5,7 +5,9 @@
  */
 package net.sp1d.chym.loader.repo;
 
+import java.util.List;
 import net.sp1d.chym.loader.bean.Series;
+import net.sp1d.chym.loader.bean.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,4 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface SeriesRepo extends JpaRepository<Series, Long>{
     Series findByTitle(String title);
+    List<Series> findFavoriteSeriesByUser(User user);
 }

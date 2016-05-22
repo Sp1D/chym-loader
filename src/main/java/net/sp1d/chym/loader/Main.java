@@ -25,7 +25,7 @@ public class Main {
 
     public static void main(String[] args) {
         
-        System.setProperty("spring.profiles.active", "dev");
+        System.setProperty("spring.profiles.active", "prod");
 
         Set<Command> commands = new TreeSet<>();
         try {

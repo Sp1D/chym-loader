@@ -189,21 +189,28 @@ public class Loader {
             for (Series sery : series) {
 
                 Set<Episode> seryNewEpisodes = commonService.loadNewEpisodesBySeries(sery);
-
-                updates.addEpisodes(sery, seryNewEpisodes);
+                
+                if (!seryNewEpisodes.isEmpty()) updates.addEpisodes(sery, seryNewEpisodes);
 
                 int i = 0;
                 for (Episode episode : seryNewEpisodes) {
                     i++;
                     commonService.loadTorrentsByEpisode(episode);
-                    if (i == 1) {
-                        break;
-                    }
+//                    if (i == 1) {
+//                        break;
+//                    }
                 }
 
             }
             fetcherService.fetchSeries(newSeries);
-
+            
+            int totalNewEpisodes = 0;
+            for (Set<Episode> episodes : updates.getEpisodes().values()) {
+                totalNewEpisodes += episodes.size();
+            }
+            LOG.info(updates.getSeries().size() + " new series, " + 
+                     totalNewEpisodes + " new episodes was found");
+            
         } catch (Exception ex) {
             processException(ex);
         }
@@ -226,8 +233,7 @@ public class Loader {
         LOG.info("Reading rss feeds for updates");
         updates.reset();
         series = seriesRepo.findAll();
-        try {
-            
+        try {            
             List<Series> updatedSeries = commonService.loadUpdatedSeriesByRss(series);
 
             for (Series ser : updatedSeries) {
@@ -238,8 +244,13 @@ public class Loader {
                     commonService.loadTorrentsByEpisode(newEpisode);
                 }
             }
-
             
+            int totalNewEpisodes = 0;
+            for (Set<Episode> episodes : updates.getEpisodes().values()) {
+                totalNewEpisodes += episodes.size();
+            }
+            LOG.info(updates.getSeries().size() + " new series, " + 
+                     totalNewEpisodes + " new episodes was found");
 
         } catch (IOException ex) {
             processException(ex);

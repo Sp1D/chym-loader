@@ -14,8 +14,11 @@ import net.sp1d.chym.loader.bean.Series;
 import net.sp1d.chym.loader.bean.User;
 import net.sp1d.chym.loader.notifier.NotifyDeliveryType;
 import net.sp1d.chym.loader.notifier.NotifyType;
+import net.sp1d.chym.loader.repo.SeriesRepo;
 import net.sp1d.chym.loader.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,37 +30,42 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     
     @Autowired
-    UserRepo userRepo;
+    protected UserRepo userRepo;
+    
+    @Autowired SeriesRepo seriesRepo;
     
     @Autowired
-    SeriesService seriesService;
-    
-    @Transactional
+    protected SeriesService seriesService;
+            
     public User findByEmail(String email) {       
         return userRepo.findOneByEmail(email);
     }
-    
-    @Transactional
+   
     public List<User> findUserByFavoriteSeries(Series series) {
         return userRepo.findByFavoriteSeries(series);
     }
-    
-    @Transactional
+   
     public List<User> findByNotifySeries(){
         return userRepo.findByNotifySeries();
     }
     
-    @Transactional
     List<User> findByNotifyEpisodes(Episode episode) {
         return userRepo.findByNotifyEpisodes(episode);
-    }
+    }    
     
-    @Transactional
     public List<User> findAll() {
         return userRepo.findAll();
     }
     
-    public User save(User user) {
-        return userRepo.save(user);
+    public User saveAndFlush(User user){
+        return userRepo.saveAndFlush(user);
     }
+    
+    public List<Series> findFavoriteSeries(User user) {
+        return seriesRepo.findFavoriteSeriesByUser(user);
+    }
+
+//    public void initLazyCollections(User user){
+//        
+//    }
 }

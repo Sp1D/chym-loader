@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring-version>4.1.9.RELEASE</spring-version>
+        <spring-version>4.2.5.RELEASE</spring-version>
     </properties>
     
     <dependencies>
@@ -53,25 +53,29 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.12</version>            
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.4.1</version>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.4.1</version>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jcl</artifactId>
             <version>2.4.1</version>
+            <optional/>
         </dependency>            
         
        
@@ -80,6 +84,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.4.1</version>
+            <optional/>
         </dependency>
         
         <!--=======SPRING======-->
@@ -88,7 +93,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.9.4.RELEASE</version>
+            <version>1.10.1.RELEASE</version>
             <type>jar</type>
             <exclusions>
                 <exclusion>
@@ -96,6 +101,7 @@
                     <artifactId>jcl-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+            <optional/>
         </dependency>
         
         
@@ -105,6 +111,7 @@
             <version>${spring-version}</version>
             <scope>compile</scope>
             <type>jar</type>
+            <optional/>
         </dependency>
 <!--        <dependency>
             <groupId>org.springframework</groupId>
@@ -123,12 +130,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring-version}</version>
-            
+            <optional/>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring-version}</version>
+            <optional/>
         </dependency>
         
         <dependency>
@@ -140,6 +148,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring-version}</version>
+            <optional/>
         </dependency>  
         
 <!--        <dependency>
@@ -167,6 +176,7 @@
                     <artifactId>jboss-logging</artifactId>
                 </exclusion>
             </exclusions>
+            <optional/>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -178,12 +188,14 @@
                     <artifactId>jboss-logging</artifactId>
                 </exclusion>
             </exclusions>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>1.0.0.Final</version>            
+            <optional/>
         </dependency>
         
         <!--        <dependency>
@@ -196,18 +208,21 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.38</version>
+            <optional/>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.1.1</version>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>2.3.3</version>
+            <optional/>
         </dependency>
 
 
@@ -218,16 +233,19 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
+            <optional/>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.0</version>
+            <optional/>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>3.3.0.Final</version>
+            <optional/>
         </dependency>
         
 <!--        <dependency>
@@ -245,6 +263,7 @@
             <artifactId>google-http-client</artifactId>
             <version>1.20.0</version>
             <type>jar</type>
+            <optional/>
         </dependency>
         
         <dependency>
@@ -252,6 +271,7 @@
             <artifactId>google-http-client-gson</artifactId>
             <version>1.20.0</version>
             <type>jar</type>
+            <optional/>
         </dependency>
         
         <dependency>
@@ -259,6 +279,7 @@
             <artifactId>httpclient</artifactId>
             <version>4.5</version>
             <type>jar</type>
+            <optional/>
         </dependency>
         
               
@@ -269,6 +290,7 @@
             <artifactId>themoviedbapi</artifactId>
             <version>4.2</version>
             <type>jar</type>
+            <optional/>
         </dependency>
         
         <!--    OTHER--> 
@@ -277,12 +299,14 @@
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
             <version>1.5.5</version>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>1.4.7</version>
+            <optional/>
         </dependency>
         
         <!--    TESTING-->
@@ -291,20 +315,29 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <optional/>
         </dependency>
             
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>1.10.19</version>
+            <optional/>
         </dependency>
         
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring-version}</version>
+            <optional/>
         </dependency>
-        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>4.1.0.RELEASE</version>
+            <type>jar</type>
+            <optional/>
+        </dependency>
     </dependencies>
 
 </project>

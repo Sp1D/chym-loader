@@ -61,9 +61,13 @@ public class Notifier {
         LOG.debug("Notifying users about updates");
         if (updates.getSeries() != null && !updates.getSeries().isEmpty()) {
             notifyUsersAboutNewSeries();
+        } else {
+            LOG.debug("New series are not discovered");
         }
         if (updates.getEpisodes() != null && !updates.getEpisodes().isEmpty()) {
             notifyUsersAboutNewEpisodes();
+        } else {
+            LOG.debug("New episodes are not discovered");
         }
     }
 
@@ -86,11 +90,13 @@ public class Notifier {
     }
 
     private void notifyUsersAboutNewEpisodes() throws IOException {
-
+//      Для каждого сериала
         for (Series series : updates.getEpisodes().keySet()) {
+//          Найдем подписчиков
             List<User> users = userService.findUserByFavoriteSeries(series);
-
+//          Для каждого подписчика
             for (User user : users) {
+//              Создадим уведомления для каждого типа уведомлений
                 for (NotifyDeliveryType delivery : user.getNotifyDeliveryTypes()) {
                     switch (delivery) {
                         case EMAIL:

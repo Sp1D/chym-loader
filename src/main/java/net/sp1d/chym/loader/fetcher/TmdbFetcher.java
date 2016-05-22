@@ -116,16 +116,16 @@ public class TmdbFetcher implements Fetcher {
             ser.setImdbRating(imdbFetcher.getRating(ser.readExtId(IdType.IMDB)));
             LOG.debug("Got rating from IMDB for {} : {}({})", ser.getTitle(), ser.getImdbRating().getRating(), ser.getImdbRating().getVotes());
 
-//            if (i == 10) {
-//                break;
-//            }
+            if (i == 3) {
+                break;
+            }
         }
     }
 
-    private List<Genre> combineTmdbGenres(
+    private Set<Genre> combineTmdbGenres(
             List<com.omertron.themoviedbapi.model.Genre> enGenres,
             List<com.omertron.themoviedbapi.model.Genre> foreignGenres, LangType lang) {
-        List<Genre> output = new ArrayList<>();
+        Set<Genre> output = new HashSet<>();
         for (com.omertron.themoviedbapi.model.Genre enGenre : enGenres) {
             Genre genre = genreRepo.findOne(enGenre.getId());
             if (genre != null) {

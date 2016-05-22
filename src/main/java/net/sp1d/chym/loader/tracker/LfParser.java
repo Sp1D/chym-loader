@@ -74,7 +74,7 @@ public class LfParser implements Parser {
     private final String SHOW_BASE_URL = "http://www.lostfilm.tv/browse.php?cat=";
     private final String UID_COOKIE = "1542955";
     private final String PASS_COOKIE = "83cc1f785c24263d300d03ca9545b4cc";
-    private final long CACHE_INTERVAL = 120_000;
+    private final long CACHE_INTERVAL = 600_000;
     private LfCache cache;
     private DocumentBuilderFactory dbf;
 

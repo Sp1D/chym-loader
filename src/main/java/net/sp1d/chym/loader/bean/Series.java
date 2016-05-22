@@ -26,6 +26,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -39,6 +41,13 @@ import net.sp1d.chym.loader.type.TrackerType;
  */
 @Entity
 @Table(name = "series")
+@NamedQueries({
+//@NamedQuery(name = "User.findByNotifySeries", query = "SELECT u FROM User u WHERE 'NEWSERIES' MEMBER OF u.notifyTypes"),
+//@NamedQuery(name = "User.findByFavoriteSeries", query = "SELECT u FROM User u WHERE ?1 MEMBER OF u.favorites"),
+//@NamedQuery(name = "User.findByNotifyEpisodes", query = "SELECT u FROM User u WHERE (SELECT s FROM Series s WHERE ?1 MEMBER OF s.episodes) MEMBER OF u.favorites")
+// "SELECT s FROM Series s WHERE ?1 MEMBER OF s.episodes"
+@NamedQuery(name = "Series.findFavoriteSeriesByUser", query ="SELECT u.favorites FROM User u WHERE u = ?1 ")        
+})
 public class Series implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -99,7 +108,7 @@ public class Series implements Serializable {
     private ImdbRating imdbRating;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Genre> genres;
+    private Set<Genre> genres;
 
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn
@@ -366,11 +375,11 @@ public class Series implements Serializable {
         this.imdbRating = imdbRating;
     }
 
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 
@@ -381,5 +390,7 @@ public class Series implements Serializable {
     public void setTrackerSpecific(Map<TrackerType, TrackerSpecificForSeries> trackerSpecific) {
         this.trackerSpecific = trackerSpecific;
     }
+    
+    
 
 }

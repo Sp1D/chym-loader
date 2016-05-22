@@ -6,12 +6,14 @@
 package net.sp1d.chym.loader.bean;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -21,6 +23,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import net.sp1d.chym.loader.notifier.NotifyDeliveryType;
 import net.sp1d.chym.loader.notifier.NotifyType;
+import net.sp1d.chym.loader.repo.SeriesRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -51,7 +55,7 @@ public class User implements Serializable{
     
     private boolean enabled;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)    
     private List<Series> favorites;
     
     @ElementCollection
@@ -68,7 +72,11 @@ public class User implements Serializable{
     @Transient
     private String p2;
     
+    private UserSettings settings;
     
+//    @Autowired
+//    @Transient
+//    SeriesRepo seriesRepo;
     
 //    GENERATED SETTERS AND GETTERS
 
@@ -113,6 +121,7 @@ public class User implements Serializable{
     }
 
     public List<Series> getFavorites() {
+//        return seriesRepo.findFavoriteSeriesByUser(this);
         return favorites;
     }
 
@@ -121,6 +130,7 @@ public class User implements Serializable{
     }
 
     public Set<NotifyType> getNotifyTypes() {
+        if (notifyTypes == null) notifyTypes = new HashSet<>();
         return notifyTypes;
     }
 
@@ -129,6 +139,7 @@ public class User implements Serializable{
     }
 
     public Set<NotifyDeliveryType> getNotifyDeliveryTypes() {
+        if (notifyDeliveryTypes == null) notifyDeliveryTypes = new HashSet<>();
         return notifyDeliveryTypes;
     }
 
@@ -150,6 +161,14 @@ public class User implements Serializable{
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public UserSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettings settings) {
+        this.settings = settings;
     }
     
     
