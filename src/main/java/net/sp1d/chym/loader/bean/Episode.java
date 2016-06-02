@@ -33,7 +33,7 @@ import net.sp1d.chym.loader.type.LangType;
  */
 @Entity
 @Table(name = "episode")
-public class Episode implements Serializable {
+public class Episode implements Serializable, Comparable<Episode> {
 
     private static final long serialVersionUID = 1L;
 
@@ -166,6 +166,14 @@ public class Episode implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public int compareTo(Episode o) {
+        if (this.seasonN != o.seasonN) return this.seasonN - o.seasonN;
+        else
+        return this.episodeN - o.episodeN;
+    }
+    
 
 //    GENERATED GETTERS AND SETTERS
 //    ------------------------------------------------------------------------

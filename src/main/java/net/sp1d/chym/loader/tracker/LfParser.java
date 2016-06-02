@@ -50,6 +50,7 @@ import net.sp1d.chym.loader.type.TrackerType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -76,10 +77,13 @@ public class LfParser implements Parser {
     private final String PASS_COOKIE = "83cc1f785c24263d300d03ca9545b4cc";
     private final long CACHE_INTERVAL = 600_000;
     private LfCache cache;
-    private DocumentBuilderFactory dbf;
-
+    private DocumentBuilderFactory dbf;    
+    
     @Autowired
     SeriesService seriesService;
+    
+    @Autowired 
+    Environment env;
 
     @Override
     public void exit() {
@@ -88,7 +92,7 @@ public class LfParser implements Parser {
         }
     }
 
-    private List<String> getPageContent(String stringUrl) throws MalformedURLException, IOException {
+    private List<String> getPageContent(String stringUrl, boolean viaProxy) throws MalformedURLException, IOException {
         if (cache == null) {
             cache = new LfCache();
         }
@@ -101,15 +105,20 @@ public class LfParser implements Parser {
                 LOG.debug("Retrieving from web, because cache is obsolete {}", stringUrl);
             }
         }
+        
+        if (viaProxy) {
+            System.setProperty("http.proxyHost", env.getProperty("proxy.1.host"));
+            System.setProperty("http.proxyPort", env.getProperty("proxy.1.port"));
+        }
 
         List<String> strings = new LinkedList<>();
         GenericUrl gUrl;
 
-        gUrl = new GenericUrl(new URL(stringUrl));
-
+        gUrl = new GenericUrl(new URL(stringUrl));        
+        
         HttpRequest req = reqF.buildGetRequest(gUrl);
         HttpResponse responce = req.execute();
-
+        
         if (responce.getStatusCode() >= 300) {
             throw new IOException("HTTP error, status: " + responce.getStatusCode()
                     + ", " + responce.getStatusMessage());
@@ -118,21 +127,27 @@ public class LfParser implements Parser {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(responce.getContent(), charset))) {
             String line;
             do {
-                line = br.readLine();
+                line = br.readLine();                
                 if (line != null) {
+                    if (line.contains("Контент недоступен на территории Российской Федерации")) return getPageContent(stringUrl, true);
                     strings.add(line);
                 }
             } while (line != null);
         }
 
-        cache.addCache(stringUrl, new LfCachedUrl(CACHE_INTERVAL, strings, stringUrl));
+        if (viaProxy) {
+            System.setProperty("http.proxyHost", "");
+            System.setProperty("http.proxyPort", "");
+        }
+        
+        cache.addCache(stringUrl, new LfCachedUrl(CACHE_INTERVAL, strings, stringUrl));        
         return strings;
     }
 
     private String parseYearByLocalId(String localId) throws IOException {
         String year = null;
         Pattern yearPattern = Pattern.compile("\\u0413\\u043E\\u0434\\s+\\u0432\\u044B\\u0445\\u043E\\u0434\\u0430:\\s*<span>(\\d{4})<\\/span><br\\s+\\/>");
-        for (String line : getPageContent(SHOW_BASE_URL + localId)) {
+        for (String line : getPageContent(SHOW_BASE_URL + localId, false)) {
             Matcher matcher = yearPattern.matcher(line);
             if (matcher.find()) {
                 year = matcher.group(1);
@@ -141,9 +156,6 @@ public class LfParser implements Parser {
         }
         return year;
     }
-
-    
-
  
     private String getRssContent() throws IOException {
         GenericUrl url = new GenericUrl(RSS_URL);
@@ -350,7 +362,7 @@ public class LfParser implements Parser {
     }
 
     private String parseIdByTitle(String title) throws IOException {
-        List<String> page = getPageContent(SHOWS_PAGE);
+        List<String> page = getPageContent(SHOWS_PAGE, false);
 
         Pattern idAndTitlePattern = Pattern.compile("<a\\shref=\"\\/browse\\.php\\?cat="
                 + "(?<id>\\d+)\".+<br><span>\\("
@@ -399,7 +411,7 @@ public class LfParser implements Parser {
         Pattern seasonAndEpisodePat = Pattern.compile("<td class=\"\"><span class=\"micro\" style=\"color:gray;\"><span>.*<\\/span>, <span>(?<season>\\d+) \\u0441\\u0435\\u0437\\u043e\\u043d (?<episode>\\d+) \\u0441\\u0435\\u0440\\u0438\\u044f<\\/span><\\/td>");
         Pattern titlePat = Pattern.compile("<div id=\"TitleDiv.*\"><nobr><span style=\"color:#4b4b4b\">(?<rustitle>.+)<\\/span><br \\/>\\((?<title>.+)\\).*<\\/nobr><\\/div><\\/div><\\/td>");
 
-        List<String> page = getPageContent(SHOW_BASE_URL + series.readExtId(IdType.LOSTFILM));
+        List<String> page = getPageContent(SHOW_BASE_URL + series.readExtId(IdType.LOSTFILM), false);
         Matcher m;
         String line;
         int index;

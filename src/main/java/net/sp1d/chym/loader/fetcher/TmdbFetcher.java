@@ -116,9 +116,9 @@ public class TmdbFetcher implements Fetcher {
             ser.setImdbRating(imdbFetcher.getRating(ser.readExtId(IdType.IMDB)));
             LOG.debug("Got rating from IMDB for {} : {}({})", ser.getTitle(), ser.getImdbRating().getRating(), ser.getImdbRating().getVotes());
 
-            if (i == 3) {
-                break;
-            }
+//            if (i == 3) {
+//                break;
+//            }
         }
     }
 

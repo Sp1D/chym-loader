@@ -9,10 +9,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,9 +33,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import net.sp1d.chym.loader.type.LangType;
 import net.sp1d.chym.loader.type.IdType;
 import net.sp1d.chym.loader.type.TrackerType;
+import org.mockito.internal.listeners.CollectCreatedMocks;
 
 /**
  *
@@ -114,6 +118,9 @@ public class Series implements Serializable {
     @MapKeyColumn
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Map<TrackerType, TrackerSpecificForSeries> trackerSpecific;
+    
+    @Transient
+    private TreeSet<Integer> seasons;
 
     public void putExtId(IdType idType, String id) {
         if (getExtId() == null) {
@@ -171,6 +178,7 @@ public class Series implements Serializable {
         }
         episode.setSeries(this, false);
         episodes.add(episode);
+        seasons = null;
     }
 
     public void removeEpisode(Episode episode) {
@@ -189,6 +197,7 @@ public class Series implements Serializable {
             episode.setSeries(null, false);
         }
         episodes.remove(episode);
+        seasons = null;
     }
 
     public boolean containsEpisode(Episode episode) {
@@ -266,6 +275,16 @@ public class Series implements Serializable {
         }
         
         return false;
+    }
+    
+    public TreeSet<Integer> getSeasons(){
+        if (seasons != null) return seasons;
+        
+        seasons = new TreeSet<>();
+        for (Episode episode : episodes) {
+            seasons.add(episode.getSeasonN());
+        }                
+        return seasons;
     }
 
 //    GENERATED GETTERS AND SETTERS
